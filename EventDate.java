@@ -19,10 +19,46 @@ public class EventDate {
                      SimpleDate _registrationStart,
                      SimpleDate _registrationEnd) {
 
-        this.startDate = _startDate;
-        this.endDate = _endDate;
-        this.registrationStart = _registrationStart;
-        this.registrationEnd = _registrationEnd;
+        setStartDate(_startDate);
+        setEndDate(_endDate);
+        setRegistrationStart(_registrationStart);
+        setRegistrationEnd(_registrationEnd);
+        validateEventDateLogic();
+    }
+
+    // ========== VALIDATION METHODS ==========
+    private boolean isDateNull(SimpleDate date) {
+        return date == null;
+    }
+
+    private int compareDates(SimpleDate date1, SimpleDate date2) {
+        if (date1.getYear() != date2.getYear()) {
+            return date1.getYear() - date2.getYear();
+        }
+        if (date1.getMonth() != date2.getMonth()) {
+            return date1.getMonth() - date2.getMonth();
+        }
+        if (date1.getDay() != date2.getDay()) {
+            return date1.getDay() - date2.getDay();
+        }
+        return date1.getHour() * 60 + date1.getMinute() - (date2.getHour() * 60 + date2.getMinute());
+    }
+
+    private void validateEventDateLogic() {
+        // registrationStart must be before registrationEnd
+        if (compareDates(registrationStart, registrationEnd) >= 0) {
+            throw new IllegalArgumentException("Registration start date must be before registration end date.");
+        }
+
+        // startDate must be before endDate
+        if (compareDates(startDate, endDate) >= 0) {
+            throw new IllegalArgumentException("Event start date must be before event end date.");
+        }
+
+        // registrationEnd must be before or equal to startDate
+        if (compareDates(registrationEnd, startDate) > 0) {
+            throw new IllegalArgumentException("Registration end date must be before or equal to event start date.");
+        }
     }
 
     // Getters
@@ -44,18 +80,30 @@ public class EventDate {
 
     // Setters
     public void setStartDate(SimpleDate _startDate) {
+        if (isDateNull(_startDate)) {
+            throw new IllegalArgumentException("Start date cannot be null.");
+        }
         this.startDate = _startDate;
     }
 
     public void setEndDate(SimpleDate _endDate) {
+        if (isDateNull(_endDate)) {
+            throw new IllegalArgumentException("End date cannot be null.");
+        }
         this.endDate = _endDate;
     }
 
     public void setRegistrationStart(SimpleDate _registrationStart) {
+        if (isDateNull(_registrationStart)) {
+            throw new IllegalArgumentException("Registration start date cannot be null.");
+        }
         this.registrationStart = _registrationStart;
     }
 
     public void setRegistrationEnd(SimpleDate _registrationEnd) {
+        if (isDateNull(_registrationEnd)) {
+            throw new IllegalArgumentException("Registration end date cannot be null.");
+        }
         this.registrationEnd = _registrationEnd;
     }
 

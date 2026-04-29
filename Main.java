@@ -1,74 +1,175 @@
-import java.util.ArrayList;
-
 public class Main {
 
     public static void main(String[] args) {
+
+        System.out.println("========================================");
+        System.out.println("  VOLUNTEER MANAGEMENT SYSTEM - NEW VERSION");
+        System.out.println("========================================\n");
 
         // =========================
         // 1. CREATE ADMIN
         // =========================
         Admin admin = new Admin("Ion", "Popescu", "ion@mail.com", "0711111111");
+        System.out.println("✓ Admin created: " + admin);
 
         // =========================
-        // 2. CREATE DATES
+        // 2. CREATE DATES FOR EVENTS
         // =========================
-        SimpleDate eventStart = new SimpleDate(2026, 5, 10, 10, 0);
-        SimpleDate eventEnd = new SimpleDate(2026, 5, 12, 18, 0);
+        SimpleDate event1Start = new SimpleDate(2026, 2, 25, 10, 0);
+        SimpleDate event1End = new SimpleDate(2026, 2, 28, 18, 0);
+        SimpleDate event1RegStart = new SimpleDate(2026, 2, 1, 0, 0);
+        SimpleDate event1RegEnd = new SimpleDate(2026, 2, 20, 23, 59);
 
-        SimpleDate regStart = new SimpleDate(2026, 4, 1, 0, 0);
-        SimpleDate regEnd = new SimpleDate(2026, 5, 5, 23, 59);
+        EventDate eventDate1 = new EventDate(event1Start, event1End, event1RegStart, event1RegEnd);
 
-        EventDate eventDate = new EventDate(eventStart, eventEnd, regStart, regEnd);
+        SimpleDate event2Start = new SimpleDate(2026, 3, 5, 10, 0);
+        SimpleDate event2End = new SimpleDate(2026, 3, 8, 18, 0);
+        SimpleDate event2RegStart = new SimpleDate(2026, 2, 15, 0, 0);
+        SimpleDate event2RegEnd = new SimpleDate(2026, 3, 1, 23, 59);
 
-        // =========================
-        // 3. CREATE COORDINATOR
-        // =========================
-        Coordinator coord = new Coordinator("Ana", "Ionescu", "ana@mail.com", "0722222222");
-
-        ArrayList<Coordinator> coordinators = new ArrayList<>();
-        coordinators.add(coord);
+        EventDate eventDate2 = new EventDate(event2Start, event2End, event2RegStart, event2RegEnd);
 
         // =========================
-        // 4. ADMIN CREATES EVENT
+        // 3. CREATE VOLUNTEERS
         // =========================
-        Event event = admin.createEvent("Tech Conference", eventDate, coordinators);
+        Volunteer vol1 = new Volunteer("Maria", "Georgescu", "maria@mail.com", "0733333333", 5, TShirtSize.M);
+        Volunteer vol2 = new Volunteer("Ana", "Ionescu", "ana@mail.com", "0722222222", 3, TShirtSize.S);
+        Volunteer vol3 = new Volunteer("Elena", "Popescu", "elena@mail.com", "0744444444", 2, TShirtSize.L);
+        Volunteer vol4 = new Volunteer("Cristian", "Vasile", "cristian@mail.com", "0755555555", 1, TShirtSize.M);
 
-        // =========================
-        // 5. CREATE VOLUNTEER
-        // =========================
-        SimpleDate availFrom = new SimpleDate(2026, 5, 1, 0, 0);
-        SimpleDate availTo = new SimpleDate(2026, 5, 15, 23, 59);
+        admin.addVolunteer(vol1);
+        admin.addVolunteer(vol2);
+        admin.addVolunteer(vol3);
+        admin.addVolunteer(vol4);
 
-        Volunteer vol = new Volunteer(
-                "Maria",
-                "Georgescu",
-                "maria@mail.com",
-                "0733333333",
-                2,
-                TShirtSize.M,
-                availFrom,
-                availTo
-        );
+        System.out.println("\n✓ Created 4 volunteers:");
+        System.out.println("  1. " + vol1.getFirstName() + " (" + vol1.getYearsOfExperience() + " years exp)");
+        System.out.println("  2. " + vol2.getFirstName() + " (" + vol2.getYearsOfExperience() + " years exp)");
+        System.out.println("  3. " + vol3.getFirstName() + " (" + vol3.getYearsOfExperience() + " years exp)");
+        System.out.println("  4. " + vol4.getFirstName() + " (" + vol4.getYearsOfExperience() + " years exp)");
 
         // =========================
-        // 6. VOLUNTEER APPLIES
+        // 4. ADMIN CREATES EVENTS
         // =========================
-        vol.applyToEvent(event);
+        Event event1 = admin.createEvent("Beach Cleanup - Feb", eventDate1);
+        Event event2 = admin.createEvent("Forest Planting - Mar", eventDate2);
+
+        System.out.println("\n✓ Admin created 2 events:");
+        System.out.println("  - Event 1: " + event1.getName() + " (Feb 25-28)");
+        System.out.println("  - Event 2: " + event2.getName() + " (Mar 5-8)");
 
         // =========================
-        // 7. DISPLAY SYSTEM STATE
+        // 5. ADMIN SELECTS COORDINATORS FROM VOLUNTEERS
+        //    (Based on experience)
         // =========================
+        System.out.println("\n========== REQUIREMENT 1: Coordinators per Event ==========");
+        System.out.println("\nAdmin selects coordinators from volunteers based on experience:");
 
-        System.out.println("===== ADMIN =====");
-        System.out.println(admin);
+        // For Event 1: Select Maria (5 years) and Ana (3 years) as coordinators
+        Coordinator role1_1 = admin.assignCoordinator(event1, vol1);
+        admin.assignCoordinator(event1, vol2);
 
-        System.out.println("\n===== EVENT =====");
-        event.display();
+        System.out.println("  Event 1 Coordinators: " + vol1.getFirstName() + ", " + vol2.getFirstName());
 
-        System.out.println("\n===== COORDINATOR =====");
-        coord.display();
+        // For Event 2: Select Ana (3 years) as coordinator (can be coordinator for multiple events)
+        Coordinator role2_1 = admin.assignCoordinator(event2, vol2);
 
-        System.out.println("\n===== VOLUNTEER =====");
-        vol.display();
+        System.out.println("  Event 2 Coordinator: " + vol2.getFirstName());
+        System.out.println("\n✓ Ana is now coordinator for BOTH events!");
+
+        // =========================
+        // 6. COORDINATORS ASSIGN SUBORDINATES
+        // =========================
+        System.out.println("\n========== REQUIREMENT 2: Coordinators Assign Subordinates ==========");
+
+        // Maria assigns Elena and Cristian as subordinates for Event 1
+        role1_1.addSubordinate(vol3);
+        role1_1.addSubordinate(vol4);
+
+        System.out.println("\nMaria (Coordinator for Event 1) assigns subordinates:");
+        System.out.println("  - " + vol3.getFirstName() + " (2 years exp)");
+        System.out.println("  - " + vol4.getFirstName() + " (1 year exp)");
+
+        // Ana assigns Elena as subordinate for Event 2
+        role2_1.addSubordinate(vol3);
+
+        System.out.println("\nAna (Coordinator for Event 2) assigns subordinate:");
+        System.out.println("  - " + vol3.getFirstName() + " (2 years exp)");
+
+        // =========================
+        // 7. COORDINATORS ACCEPT VOLUNTEERS WITH PER-EVENT AVAILABILITY
+        // =========================
+        System.out.println("\n========== REQUIREMENT 3: Per-Event Availability & Coordinator Acceptance ==========");
+
+        // Event 1 availabilities
+        SimpleDate vol3_event1_from = new SimpleDate(2026, 2, 26, 10, 0);
+        SimpleDate vol3_event1_to = new SimpleDate(2026, 2, 28, 18, 0);
+
+        SimpleDate vol4_event1_from = new SimpleDate(2026, 2, 25, 10, 0);
+        SimpleDate vol4_event1_to = new SimpleDate(2026, 2, 27, 18, 0);
+
+        // Event 2 availabilities (different dates for the same volunteers)
+        SimpleDate vol3_event2_from = new SimpleDate(2026, 3, 6, 10, 0);
+        SimpleDate vol3_event2_to = new SimpleDate(2026, 3, 8, 18, 0);
+
+        // Coordinators accept subordinates for Event 1
+        // Note: Coordinators (vol1, vol2) are NOT enrolled as volunteers - they only coordinate
+        role1_1.acceptVolunteer(vol3, vol3_event1_from, vol3_event1_to);
+        role1_1.acceptVolunteer(vol4, vol4_event1_from, vol4_event1_to);
+
+        // Coordinator accepts subordinates for Event 2
+        // Note: Ana (vol2) is coordinator for Event 2, not enrolled as volunteer
+        role2_1.acceptVolunteer(vol3, vol3_event2_from, vol3_event2_to);
+
+        System.out.println("\nVolunteers enrolled with DIFFERENT availability per event:\n");
+
+        System.out.println("Event 1 (" + event1.getName() + ") - Feb 25-28:");
+        for (EventVolunteerAvailability av : event1.getVolunteerAvailabilities()) {
+            System.out.print("  - " + av.getVolunteer().getFirstName() + ": ");
+            av.getAvailableFrom().displayInline();
+            System.out.print(" to ");
+            av.getAvailableTo().displayInline();
+            System.out.println();
+        }
+
+        System.out.println("\nEvent 2 (" + event2.getName() + ") - Mar 5-8:");
+        for (EventVolunteerAvailability av : event2.getVolunteerAvailabilities()) {
+            System.out.print("  - " + av.getVolunteer().getFirstName() + ": ");
+            av.getAvailableFrom().displayInline();
+            System.out.print(" to ");
+            av.getAvailableTo().displayInline();
+            System.out.println();
+        }
+
+        // =========================
+        // 8. DISPLAY FINAL SYSTEM STATE
+        // =========================
+        System.out.println("\n========== FINAL SYSTEM STATE ==========\n");
+
+        System.out.println("===== EVENT 1: " + event1.getName() + " =====");
+        event1.display();
+
+        System.out.println("\n===== EVENT 2: " + event2.getName() + " =====");
+        event2.display();
+
+        // Show coordinator details
+        System.out.println("\n===== COORDINATOR ROLES =====");
+        System.out.println("\nEvent 1 Coordinators and their subordinates:");
+        for (Coordinator role : event1.getCoordinatorRoles()) {
+            System.out.println("\nCoordinator: " + role.getCoordinator().getFirstName() + " " + role.getCoordinator().getLastName());
+            System.out.println("Subordinates for " + event1.getName() + ":");
+            for (Volunteer subordinate : role.getSubordinates()) {
+                System.out.println("  - " + subordinate.getFirstName() + " " + subordinate.getLastName() + " (" + subordinate.getYearsOfExperience() + " years)");
+            }
+        }
+
+        System.out.println("\nEvent 2 Coordinators and their subordinates:");
+        for (Coordinator role : event2.getCoordinatorRoles()) {
+            System.out.println("\nCoordinator: " + role.getCoordinator().getFirstName() + " " + role.getCoordinator().getLastName());
+            System.out.println("Subordinates for " + event2.getName() + ":");
+            for (Volunteer subordinate : role.getSubordinates()) {
+                System.out.println("  - " + subordinate.getFirstName() + " " + subordinate.getLastName() + " (" + subordinate.getYearsOfExperience() + " years)");
+            }
+        }
     }
 }

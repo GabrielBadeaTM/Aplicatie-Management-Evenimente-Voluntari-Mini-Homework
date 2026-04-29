@@ -1,55 +1,97 @@
 import java.util.ArrayList;
 
-public class Coordinator extends Person {
+/**
+ * Represents a Volunteer assigned as a Coordinator for a specific Event.
+ * A Volunteer can be a Coordinator for multiple events, and each event can have multiple Coordinators.
+ * A Coordinator can have subordinate Volunteers for a specific event.
+ */
+public class Coordinator {
 
-    private ArrayList<Volunteer> volunteers;
+    private Event event;
+    private Volunteer coordinator;
+    private ArrayList<Volunteer> subordinates;
 
-    // Default constructor
-    public Coordinator() {
-        super();
-        this.volunteers = new ArrayList<>();
+    // Constructor
+    public Coordinator(Event _event, Volunteer _coordinator) {
+        setEvent(_event);
+        setCoordinator(_coordinator);
+        this.subordinates = new ArrayList<>();
     }
 
-    // Constructor with parameters
-    public Coordinator(String _firstName, String _lastName, String _email, String _phone) {
-        super(_firstName, _lastName, _email, _phone);
-        this.volunteers = new ArrayList<>();
+    // ========== VALIDATION METHODS ==========
+    private boolean isObjectNull(Object obj) {
+        return obj == null;
     }
 
-    // Add volunteer
-    public void addVolunteer(Volunteer _volunteer) {
-        this.volunteers.add(_volunteer);
+    // Getters
+    public Event getEvent() {
+        return event;
     }
 
-    // Remove volunteer
-    public void removeVolunteer(Volunteer _volunteer) {
-        this.volunteers.remove(_volunteer);
+    public Volunteer getCoordinator() {
+        return coordinator;
     }
 
-    // Get volunteers
-    public ArrayList<Volunteer> getVolunteers() {
-        return volunteers;
+    public ArrayList<Volunteer> getSubordinates() {
+        return subordinates;
+    }
+
+    // Setters
+    public void setEvent(Event _event) {
+        if (isObjectNull(_event)) {
+            throw new IllegalArgumentException("Event cannot be null.");
+        }
+        this.event = _event;
+    }
+
+    public void setCoordinator(Volunteer _coordinator) {
+        if (isObjectNull(_coordinator)) {
+            throw new IllegalArgumentException("Coordinator cannot be null.");
+        }
+        this.coordinator = _coordinator;
+    }
+
+    // Add subordinate
+    public void addSubordinate(Volunteer _volunteer) {
+        if (!subordinates.contains(_volunteer)) {
+            subordinates.add(_volunteer);
+        }
+    }
+
+    // Remove subordinate
+    public void removeSubordinate(Volunteer _volunteer) {
+        subordinates.remove(_volunteer);
+    }
+
+    // Check if a volunteer is a subordinate
+    public boolean hasSubordinate(Volunteer _volunteer) {
+        return subordinates.contains(_volunteer);
+    }
+
+    // Accept a volunteer for this event
+    public void acceptVolunteer(Volunteer _volunteer, SimpleDate _from, SimpleDate _to) {
+        // Validation: coordinator cannot be their own subordinate
+        if (_volunteer.equals(coordinator)) {
+            throw new IllegalArgumentException("Coordinator cannot be their own subordinate.");
+        }
+        addSubordinate(_volunteer);
+        event.enrollVolunteer(_volunteer, _from, _to);
     }
 
     // Display
     public void display() {
-        System.out.println("Coordinator: " + firstName + " " + lastName);
-        System.out.println("Email: " + email);
-        System.out.println("Phone: " + phone);
-
-        System.out.println("Volunteers:");
-        for (Volunteer v : volunteers) {
-            v.display();
-            System.out.println("-----");
+        System.out.println("Coordinator: " + coordinator.getFirstName() + " " + coordinator.getLastName());
+        System.out.println("Event: " + event.getName());
+        System.out.println("Subordinates: " + subordinates.size());
+        for (Volunteer v : subordinates) {
+            System.out.println("  - " + v.getFirstName() + " " + v.getLastName());
         }
     }
 
     @Override
     public String toString() {
-        return "Coordinator{" +
-                "firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", volunteersCount=" + volunteers.size() +
-                '}';
+        return coordinator.getFirstName() + " " + coordinator.getLastName() +
+               " - Coordinator for " + event.getName() +
+               " (Subordinates: " + subordinates.size() + ")";
     }
 }
