@@ -82,16 +82,13 @@ public class Main {
         // =========================
         System.out.println("\n========== REQUIREMENT 2: Coordinators Assign Subordinates ==========");
 
-        // Maria assigns Elena and Cristian as subordinates for Event 1
-        role1_1.addSubordinate(vol3);
-        role1_1.addSubordinate(vol4);
+        // Assignments now via acceptVolunteer() in REQUIREMENT 3
 
         System.out.println("\nMaria (Coordinator for Event 1) assigns subordinates:");
         System.out.println("  - " + vol3.getFirstName() + " (2 years exp)");
         System.out.println("  - " + vol4.getFirstName() + " (1 year exp)");
 
-        // Ana assigns Elena as subordinate for Event 2
-        role2_1.addSubordinate(vol3);
+        // Assignment via acceptVolunteer() in REQUIREMENT 3
 
         System.out.println("\nAna (Coordinator for Event 2) assigns subordinate:");
         System.out.println("  - " + vol3.getFirstName() + " (2 years exp)");

@@ -89,6 +89,21 @@ public class Coordinator {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Coordinator other = (Coordinator) obj;
+        return event != null && event.equals(other.event) && coordinator != null && coordinator.equals(other.coordinator);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = event != null ? event.hashCode() : 0;
+        result = 31 * result + (coordinator != null ? coordinator.hashCode() : 0);
+        return result;
+    }
+
+        @Override
     public String toString() {
         return coordinator.getFirstName() + " " + coordinator.getLastName() +
                " - Coordinator for " + event.getName() +

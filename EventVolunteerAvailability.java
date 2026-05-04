@@ -95,6 +95,21 @@ public class EventVolunteerAvailability {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        EventVolunteerAvailability other = (EventVolunteerAvailability) obj;
+        return event != null && event.equals(other.event) && volunteer != null && volunteer.equals(other.volunteer);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = event != null ? event.hashCode() : 0;
+        result = 31 * result + (volunteer != null ? volunteer.hashCode() : 0);
+        return result;
+    }
+
+        @Override
     public String toString() {
         return volunteer.getFirstName() + " " + volunteer.getLastName() +
                " available from " + availableFrom + " to " + availableTo;

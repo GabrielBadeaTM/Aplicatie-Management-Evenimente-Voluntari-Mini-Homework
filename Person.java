@@ -99,6 +99,19 @@ public class Person {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Person other = (Person) obj;
+        return email != null && email.equals(other.email);
+    }
+
+    @Override
+    public int hashCode() {
+        return email != null ? email.hashCode() : 0;
+    }
+
+        @Override
     public String toString() {
         return "Person{" +
                 "firstName='" + firstName + '\'' +

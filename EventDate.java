@@ -127,6 +127,21 @@ public class EventDate {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        EventDate other = (EventDate) obj;
+        return startDate != null && startDate.equals(other.startDate) && endDate != null && endDate.equals(other.endDate);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = startDate != null ? startDate.hashCode() : 0;
+        result = 31 * result + (endDate != null ? endDate.hashCode() : 0);
+        return result;
+    }
+
+        @Override
     public String toString() {
         return "EventDate{" +
                 "startDate=" + startDate +

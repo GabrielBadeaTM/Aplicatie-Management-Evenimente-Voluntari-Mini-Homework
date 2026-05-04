@@ -191,6 +191,19 @@ public class Event {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Event other = (Event) obj;
+        return name != null && name.equals(other.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return name != null ? name.hashCode() : 0;
+    }
+
+        @Override
     public String toString() {
         return "Event{" +
                 "name='" + name + '\'' +

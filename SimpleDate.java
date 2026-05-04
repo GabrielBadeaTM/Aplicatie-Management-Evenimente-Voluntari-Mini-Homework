@@ -139,6 +139,24 @@ public class SimpleDate {
     }
     
     @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        SimpleDate other = (SimpleDate) obj;
+        return year == other.year && month == other.month && day == other.day && hour == other.hour && minute == other.minute;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = year;
+        result = 31 * result + month;
+        result = 31 * result + day;
+        result = 31 * result + hour;
+        result = 31 * result + minute;
+        return result;
+    }
+
+        @Override
     public String toString() {
         return year + "-" +
                String.format("%02d", month) + "-" +
