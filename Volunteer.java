@@ -1,5 +1,25 @@
 import java.util.ArrayList;
 
+/**
+ * Represents a Volunteer in the event management system.
+ * 
+ * Inherits from Person and extends with:
+ * - yearsOfExperience: 0-100 years of volunteer experience
+ * - tShirtSize: S, M, L, or XL
+ * - eventAvailabilities: list of events the volunteer has applied to with their availability for each
+ * 
+ * Key Responsibilities:
+ * 1. Apply to events with specific time availability (within registration window)
+ * 2. Cancel applications to events
+ * 3. Update availability for specific events
+ * 4. Can be assigned as a Coordinator for events (managing subordinates)
+ * 
+ * Important Notes:
+ * - When a volunteer applies to an event, they must have available dates within the event's date range
+ * - Application must occur during the event's registration window
+ * - Different availability can be specified for each event they apply to
+ * - A volunteer cannot apply twice to the same event
+ */
 public class Volunteer extends Person {
 
     private int yearsOfExperience;
@@ -53,6 +73,26 @@ public class Volunteer extends Person {
     // APPLY METHODS
     // =========================
 
+    /**
+     * Applies a volunteer to an event with specific availability dates.
+     * This is the internal method that validates against a provided current time.
+     * 
+     * Validations:
+     * - Volunteer must not have already applied to this event
+     * - Application must occur within the event's registration window
+     * - Availability dates must be within the event's date range
+     * 
+     * Effect:
+     * - Creates an EventVolunteerAvailability record
+     * - Adds it to the volunteer's list of applications
+     * - Registers the volunteer in the event's volunteer list
+     * 
+     * @param _event the event to apply to
+     * @param _availableFrom the start date of availability for this event
+     * @param _availableTo the end date of availability for this event
+     * @param _currentTime the current time (used to validate registration window)
+     * @throws IllegalArgumentException if any validation fails
+     */
     // Apply to event with specific availability dates (internal method with current time validation)
     public void applyToEvent(Event _event, SimpleDate _availableFrom, SimpleDate _availableTo, SimpleDate _currentTime) {
         // Validate that volunteer is not already applied to this event

@@ -2,8 +2,23 @@ import java.util.ArrayList;
 
 /**
  * Represents a Volunteer assigned as a Coordinator for a specific Event.
- * A Volunteer can be a Coordinator for multiple events, and each event can have multiple Coordinators.
- * A Coordinator can have subordinate Volunteers for a specific event.
+ * 
+ * Structure:
+ * - event: the event this coordination role is for
+ * - coordinator: the volunteer who is acting as a coordinator
+ * - subordinates: list of volunteers managed by this coordinator for this event
+ * 
+ * Key Characteristics:
+ * - A volunteer can be a coordinator for multiple events
+ * - Each event can have multiple coordinators
+ * - A coordinator can manage multiple subordinate volunteers for their event
+ * - A coordinator cannot be a subordinate to themselves
+ * - Subordinates must have applied to the event before being accepted by a coordinator
+ * 
+ * Coordinator Responsibilities:
+ * - Accept volunteers as subordinates by calling acceptVolunteer()
+ * - Manage the availability of their subordinates
+ * - Ensure subordinates don't report to multiple coordinators in the same event
  */
 public class Coordinator {
 
@@ -19,6 +34,13 @@ public class Coordinator {
     }
 
     // ========== VALIDATION METHODS ==========
+    
+    /**
+     * Checks if an object is null.
+     * 
+     * @param obj the object to check
+     * @return true if the object is null, false otherwise
+     */
     private boolean isObjectNull(Object obj) {
         return obj == null;
     }
@@ -51,6 +73,14 @@ public class Coordinator {
         this.coordinator = _coordinator;
     }
 
+    // ===== SUBORDINATE MANAGEMENT =====
+    
+    /**
+     * Adds a subordinate volunteer to this coordinator's team for this event.
+     * Duplicate subordinates are not added.
+     * 
+     * @param _volunteer the volunteer to add as subordinate
+     */
     // Add subordinate
     public void addSubordinate(Volunteer _volunteer) {
         if (!subordinates.contains(_volunteer)) {
@@ -68,6 +98,23 @@ public class Coordinator {
         return subordinates.contains(_volunteer);
     }
 
+    /**
+     * Accepts a volunteer as a subordinate for this coordinator's event.
+     * 
+     * Validations:
+     * - The coordinator cannot be their own subordinate
+     * - The volunteer must have already applied to this event
+     * - The volunteer cannot be under another coordinator for the same event
+     * 
+     * Effect:
+     * - Adds the volunteer to the coordinator's subordinates list
+     * - Updates the volunteer's availability for this specific event
+     * 
+     * @param _volunteer the volunteer to accept as subordinate
+     * @param _from the availability start date for this event
+     * @param _to the availability end date for this event
+     * @throws IllegalArgumentException if any validation fails
+     */
     // Accept a volunteer for this event
     public void acceptVolunteer(Volunteer _volunteer, SimpleDate _from, SimpleDate _to) {
         // Validation: coordinator cannot be their own subordinate
@@ -75,9 +122,24 @@ public class Coordinator {
             throw new IllegalArgumentException("Coordinator cannot be their own subordinate.");
         }
         
+        // Validation: volunteer cannot be a coordinator for this event
+        for (Coordinator coordRole : event.getCoordinatorRoles()) {
+            if (coordRole.getCoordinator().equals(_volunteer)) {
+                throw new IllegalArgumentException("Volunteer cannot be a subordinate if they are already a coordinator for this event.");
+            }
+        }
+        
         // Validation: volunteer must have already applied to this event
         if (!event.hasVolunteerApplied(_volunteer)) {
             throw new IllegalArgumentException("Volunteer must have applied to the event before accepting as subordinate.");
+        }
+        
+        // Validation: volunteer cannot be under two different coordinators in the same event
+        for (Coordinator existingCoordRole : event.getCoordinatorRoles()) {
+            if (!existingCoordRole.getCoordinator().equals(this.coordinator) && 
+                existingCoordRole.hasSubordinate(_volunteer)) {
+                throw new IllegalArgumentException("Volunteer is already under another coordinator for this event.");
+            }
         }
         
         addSubordinate(_volunteer);

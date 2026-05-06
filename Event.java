@@ -1,5 +1,30 @@
 import java.util.ArrayList;
 
+/**
+ * Represents an Event in the system managed by an Admin.
+ * 
+ * An Event has:
+ * - name: unique identifier (with dates) created by an admin
+ * - eventDate: contains registration period and event period
+ * - admin: the admin who created this event
+ * - coordinatorRoles: volunteers assigned as coordinators for this event
+ * - allRegisteredVolunteers: all volunteers who have applied to this event
+ * 
+ * Key Relationships:
+ * 1. Coordinators: Volunteers assigned to manage/coordinate the event
+ *    - A coordinator can have subordinate volunteers
+ *    - An event can have multiple coordinators
+ * 2. Volunteers: Volunteers who applied to the event
+ *    - Each volunteer specifies their availability for this event
+ *    - Can be directly enrolled or accepted by a coordinator as subordinate
+ * 
+ * Validation Rules:
+ * - Event name must be at least 3 characters
+ * - Event cannot have null dates or admin
+ * - Volunteers can only apply during the registration window
+ * - A volunteer cannot apply twice to the same event
+ * - A volunteer cannot be under two different coordinators in the same event
+ */
 public class Event {
 
     private String name;
@@ -31,10 +56,24 @@ public class Event {
     }
 
     // ========== VALIDATION METHODS ==========
+    
+    /**
+     * Validates an event name.
+     * A valid event name must not be null, not empty, and be at least 3 characters long.
+     * 
+     * @param name the event name to validate
+     * @return true if the name is valid, false otherwise
+     */
     private boolean isValidEventName(String name) {
         return name != null && !name.trim().isEmpty() && name.length() >= 3;
     }
 
+    // ===== GETTERS FOR EVENT INFORMATION =====
+    
+    /**
+     * Gets the event name.
+     * @return the name of the event
+     */
     // Getters
     public String getName() {
         return name;
@@ -73,6 +112,18 @@ public class Event {
         return false;
     }
 
+    /**
+     * Registers a volunteer's availability for this event.
+     * Called from Volunteer.applyToEvent() when the volunteer applies.
+     * 
+     * Validations:
+     * - Availability cannot be null
+     * - Availability must belong to this event
+     * - Availability is not added if it already exists
+     * 
+     * @param _availability the EventVolunteerAvailability to register
+     * @throws IllegalArgumentException if validations fail
+     */
     // Register a volunteer for this event (called from Volunteer when applying)
     public void registerVolunteer(EventVolunteerAvailability _availability) {
         if (_availability == null) {
@@ -86,6 +137,16 @@ public class Event {
         }
     }
 
+    /**
+     * Unregisters a volunteer from this event.
+     * Called from Volunteer.cancelApplication() when the volunteer cancels.
+     * 
+     * Effect:
+     * - Removes all EventVolunteerAvailability records for this volunteer
+     * 
+     * @param _volunteer the volunteer to unregister
+     * @throws IllegalArgumentException if volunteer is null
+     */
     // Unregister a volunteer from this event (called from Volunteer when canceling)
     public void unregisterVolunteer(Volunteer _volunteer) {
         if (_volunteer == null) {
@@ -94,6 +155,14 @@ public class Event {
         allRegisteredVolunteers.removeIf(av -> av.getVolunteer().equals(_volunteer));
     }
 
+    // ===== SETTERS WITH VALIDATION =====
+    
+    /**
+     * Sets the event name with validation.
+     * 
+     * @param _name the new event name (must be at least 3 characters)
+     * @throws IllegalArgumentException if the name is invalid
+     */
     // Setters
     public void setName(String _name) {
         if (!isValidEventName(_name)) {
@@ -120,6 +189,14 @@ public class Event {
     // COORDINATOR MANAGEMENT
     // =========================
 
+    /**
+     * Assigns a volunteer as a coordinator for this event.
+     * If the volunteer is already a coordinator, returns the existing role.
+     * 
+     * @param _volunteer the volunteer to assign as coordinator
+     * @return the Coordinator role object for this event
+     * @throws IllegalArgumentException if volunteer is null
+     */
     // Assign a volunteer as a coordinator for this event
     public Coordinator assignCoordinator(Volunteer _volunteer) {
         // Check if volunteer is already a coordinator for this event
@@ -172,11 +249,28 @@ public class Event {
     // VOLUNTEER MANAGEMENT
     // =========================
 
+    /**
+     * Enrolls a volunteer for this event with specified availability.
+     * This is a convenience method that delegates to the volunteer.
+     * 
+     * @param _volunteer the volunteer to enroll
+     * @param _from the start date of the volunteer's availability
+     * @param _to the end date of the volunteer's availability
+     */
     // Enroll a volunteer with specific availability
     public void enrollVolunteer(Volunteer _volunteer, SimpleDate _from, SimpleDate _to) {
         _volunteer.applyToEvent(this, _from, _to);
     }
 
+    /**
+     * Gets all unique volunteers enrolled in this event.
+     * 
+     * Important:
+     * - This returns only the unique volunteer objects, not the availability records
+     * - A volunteer appears only once in this list even if they have multiple availability periods
+     * 
+     * @return list of all volunteers who have applied to this event
+     */
     // Get all volunteers enrolled in this event
     public ArrayList<Volunteer> getEnrolledVolunteers() {
         ArrayList<Volunteer> volunteers = new ArrayList<>();

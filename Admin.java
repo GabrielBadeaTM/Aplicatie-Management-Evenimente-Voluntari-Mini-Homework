@@ -1,5 +1,24 @@
 import java.util.ArrayList;
 
+/**
+ * Represents an Administrator in the event management system.
+ * 
+ * Inherits from Person and provides system-wide management capabilities:
+ * 1. Event Management: Create and cancel events
+ * 2. Volunteer Management: Maintain a registry of available volunteers
+ * 3. Coordinator Assignment: Assign volunteers as coordinators for events
+ * 
+ * Key Responsibilities:
+ * - Create events with specific dates and registration windows
+ * - Cancel events with cascade cleanup (removes all enrolled volunteers and coordinator roles)
+ * - Maintain a master list of available volunteers
+ * - Assign coordinators to events (coordinators then manage subordinate volunteers)
+ * 
+ * Important Notes:
+ * - Admins do NOT directly enroll volunteers in events (that's the coordinator's job)
+ * - When an admin is deleted, all their created events are also deleted (cascade delete)
+ * - Events are unique by (name, dates) - duplicate events cannot be created
+ */
 public class Admin extends Person {
 
     private ArrayList<Event> createdEvents;
@@ -23,6 +42,17 @@ public class Admin extends Person {
     // EVENT MANAGEMENT
     // =========================
 
+    /**
+     * Creates a new event with the specified name and date information.
+     * 
+     * Validation:
+     * - Event name must not already exist with same dates
+     * 
+     * @param name the event name (must be at least 3 characters)
+     * @param eventDate the date object containing registration and event dates
+     * @return the newly created Event object
+     * @throws IllegalArgumentException if an event with the same name and dates already exists
+     */
     // CREATE EVENT
     public Event createEvent(String name, EventDate eventDate) {
         // Check if event with same name and dates already exists
@@ -39,6 +69,21 @@ public class Admin extends Person {
         return event;
     }
 
+    /**
+     * Cancels an event and performs cascade cleanup.
+     * 
+     * Cascade Operations (in order):
+     * 1. Notifies all enrolled volunteers to cancel their applications
+     * 2. Removes all coordinator roles and their subordinates from the event
+     * 3. Removes the event from the admin's event list
+     * 
+     * Effect:
+     * - Event is deleted from the system
+     * - All volunteer-event associations are removed
+     * - All coordinator-event associations are removed
+     * 
+     * @param event the event to cancel
+     */
     // CANCEL EVENT - WITH CASCADE DELETE
     public void cancelEvent(Event event) {
         if (!createdEvents.contains(event)) {
@@ -69,6 +114,22 @@ public class Admin extends Person {
         System.out.println("Event cancelled: " + event.getName() + " (cascade cleanup completed)");
     }
     
+    /**
+     * Deletes this admin from the system.
+     * 
+     * Cascade Operations:
+     * 1. Cancels all events created by this admin (which cascades cleanup)
+     * 2. Clears the volunteer registry
+     * 
+     * Important:
+     * - This is a destructive operation that removes all data associated with this admin
+     * - All events, coordinators, and volunteer-event associations are deleted
+     * 
+     * Effect:
+     * - Admin is removed from the system
+     * - All their created events are deleted
+     * - All volunteer registry entries are cleared
+     */
     // DELETE ADMIN - WITH CASCADE DELETE (delete all events)
     public void deleteAdmin() {
         // Cancel all created events (which cascades cleanup to volunteers and coordinators)
@@ -87,6 +148,16 @@ public class Admin extends Person {
     // VOLUNTEER MANAGEMENT
     // =========================
 
+    /**
+     * Registers a volunteer as available in the system.
+     * 
+     * Important:
+     * - This does NOT enroll the volunteer in any specific event
+     * - This creates a system-wide registry of available volunteers
+     * - A volunteer cannot be added to the registry twice (checked with contains)
+     * 
+     * @param _volunteer the volunteer to add to the registry
+     */
     // Add volunteer to the list of available volunteers
     public void addVolunteer(Volunteer _volunteer) {
         if (!allVolunteers.contains(_volunteer)) {
@@ -103,6 +174,18 @@ public class Admin extends Person {
     // COORDINATOR ASSIGNMENT
     // =========================
 
+    /**
+     * Assigns a volunteer as a coordinator for a specific event.
+     * 
+     * Important Notes:
+     * - A volunteer can be a coordinator for multiple events
+     * - An event can have multiple coordinators
+     * - This creates a Coordinator role object that manages subordinates
+     * 
+     * @param event the event to assign a coordinator to
+     * @param volunteer the volunteer to assign as coordinator
+     * @return the Coordinator role object
+     */
     // Select a volunteer as coordinator for a specific event
     public Coordinator assignCoordinator(Event event, Volunteer volunteer) {
         return event.assignCoordinator(volunteer);

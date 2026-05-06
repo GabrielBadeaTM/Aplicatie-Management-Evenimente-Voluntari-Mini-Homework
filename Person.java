@@ -1,3 +1,12 @@
+/**
+ * Represents a base Person class with contact information and validation.
+ * This is the parent class for Admin and Volunteer.
+ * 
+ * Features:
+ * - Stores firstName, lastName, email, and phone
+ * - Validates all input according to specific rules
+ * - Email is used as a unique identifier (for equality and hashing)
+ */
 public class Person {
 
     protected String firstName;
@@ -5,7 +14,7 @@ public class Person {
     protected String email;
     protected String phone;
 
-    // Default constructor
+    // Default constructor - initializes with dummy values
     public Person() {
         this.firstName = "fn";
         this.lastName = "ln";
@@ -13,7 +22,14 @@ public class Person {
         this.phone = "0000000000";
     }
 
-    // Constructor with parameters
+    /**
+     * Constructor with parameters - initializes a Person with provided contact information
+     * 
+     * @param _firstName person's first name (must be at least 2 characters)
+     * @param _lastName person's last name (must be at least 2 characters)
+     * @param _email person's email (must contain @ and . and be properly formatted)
+     * @param _phone person's phone number (must be 7-15 digits)
+     */
     public Person(String _firstName, String _lastName, String _email, String _phone) {
         setFirstName(_firstName);
         setLastName(_lastName);
@@ -22,10 +38,25 @@ public class Person {
     }
 
     // ========== VALIDATION METHODS ==========
+    
+    /**
+     * Validates a person's name.
+     * A valid name must not be null, must not be empty, and must be at least 2 characters long.
+     * 
+     * @param name the name to validate
+     * @return true if the name is valid, false otherwise
+     */
     private boolean isValidName(String name) {
         return name != null && !name.trim().isEmpty() && name.length() >= 2;
     }
 
+    /**
+     * Validates an email address.
+     * A valid email must contain '@' and '.' in the correct order and have proper formatting.
+     * 
+     * @param email the email to validate
+     * @return true if the email is valid, false otherwise
+     */
     private boolean isValidEmail(String email) {
         if (email == null || email.trim().isEmpty()) {
             return false;
@@ -34,9 +65,17 @@ public class Person {
         return email.contains("@") && email.contains(".") && 
                email.indexOf("@") > 0 && 
                email.lastIndexOf(".") > email.indexOf("@") + 1 &&
-               email.length() >= 5;
+               email.length() >= 5 &&
+               !email.contains(".@");
     }
 
+    /**
+     * Validates a phone number.
+     * A valid phone must contain only digits and have a length between 7 and 15.
+     * 
+     * @param phone the phone number to validate
+     * @return true if the phone is valid, false otherwise
+     */
     private boolean isValidPhone(String phone) {
         if (phone == null || phone.trim().isEmpty()) {
             return false;
@@ -45,24 +84,43 @@ public class Person {
         return phone.matches("\\d{7,15}");
     }
 
-    // Getters
+    // ===== GETTERS =====
+    // These methods return the person's contact information
+
+    /**
+     * Gets the person's first name.
+     * @return the first name
+     */
     public String getFirstName() {
         return firstName;
     }
 
+    /**
+     * Gets the person's last name.
+     * @return the last name
+     */
     public String getLastName() {
         return lastName;
     }
 
+    /**
+     * Gets the person's email.
+     * @return the email
+     */
     public String getEmail() {
         return email;
     }
 
+    /**
+     * Gets the person's phone number.
+     * @return the phone number
+     */
     public String getPhone() {
         return phone;
     }
 
-    // Setters
+    // ===== SETTERS =====
+    // These methods update the person's contact information with validation
     public void setFirstName(String _firstName) {
         if (!isValidName(_firstName)) {
             throw new IllegalArgumentException("Invalid first name: '" + _firstName + "'. Name must be at least 2 characters long and not empty.");

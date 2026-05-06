@@ -1,3 +1,15 @@
+/**
+ * Represents the complete date and time information for an Event.
+ * 
+ * Manages two overlapping date periods:
+ * 1. Registration Period: registrationStart to registrationEnd (when volunteers can apply)
+ * 2. Event Period: startDate to endDate (when the event actually occurs)
+ * 
+ * Constraints enforced:
+ * - registrationStart must be before registrationEnd
+ * - startDate must be before endDate
+ * - registrationEnd must be before or equal to startDate (registration must close before event starts)
+ */
 public class EventDate {
 
     private SimpleDate startDate;
@@ -27,10 +39,30 @@ public class EventDate {
     }
 
     // ========== VALIDATION METHODS ==========
+    
+    /**
+     * Checks if a date is null.
+     * 
+     * @param date the date to check
+     * @return true if the date is null, false otherwise
+     */
     private boolean isDateNull(SimpleDate date) {
         return date == null;
     }
 
+    /**
+     * Compares two SimpleDate objects.
+     * 
+     * Comparison Order:
+     * 1. Year (earlier years come first)
+     * 2. Month (if same year)
+     * 3. Day (if same month)
+     * 4. Hour and Minute (if same day)
+     * 
+     * @param date1 the first date
+     * @param date2 the second date
+     * @return negative if date1 < date2, zero if equal, positive if date1 > date2
+     */
     private int compareDates(SimpleDate date1, SimpleDate date2) {
         if (date1.getYear() != date2.getYear()) {
             return date1.getYear() - date2.getYear();
@@ -44,6 +76,16 @@ public class EventDate {
         return date1.getHour() * 60 + date1.getMinute() - (date2.getHour() * 60 + date2.getMinute());
     }
 
+    /**
+     * Validates the logical relationships between the event dates.
+     * 
+     * Ensures:
+     * 1. registrationStart < registrationEnd (registration window is valid)
+     * 2. startDate < endDate (event duration is valid)
+     * 3. registrationEnd <= startDate (registration must close before event starts)
+     * 
+     * @throws IllegalArgumentException if any constraint is violated
+     */
     private void validateEventDateLogic() {
         // registrationStart must be before registrationEnd
         if (compareDates(registrationStart, registrationEnd) >= 0) {

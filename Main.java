@@ -1,5 +1,36 @@
+/**
+ * Main class - Demonstrates the complete Volunteer Event Management System.
+ * 
+ * This program showcases:
+ * 1. System initialization with an Admin
+ * 2. Event creation with registration and event date windows
+ * 3. Volunteer registration in the system
+ * 4. Coordinator assignment to events
+ * 5. Volunteer application to events with per-event availability
+ * 6. Coordinator acceptance of volunteers as subordinates
+ * 7. Display of the complete system state
+ * 
+ * Key Demonstration:
+ * - Volunteers can apply to multiple events with DIFFERENT availability for each
+ * - Coordinators manage subordinates on a per-event basis
+ * - Cascade relationships: Admin → Events → Coordinators → Subordinates
+ */
 public class Main {
 
+    /**
+     * Entry point of the application.
+     * 
+     * Flow:
+     * 1. Create admin and event dates
+     * 2. Create volunteers and register them with the admin
+     * 3. Create events
+     * 4. Assign coordinators to events
+     * 5. Have volunteers apply to events with specific availability
+     * 6. Have coordinators accept volunteers as subordinates
+     * 7. Display final system state
+     * 
+     * @param args command line arguments (not used)
+     */
     public static void main(String[] args) {
 
         System.out.println("========================================");

@@ -1,3 +1,12 @@
+/**
+ * Represents a date and time with validation.
+ * Stores year, month, day, hour, and minute with constraints:
+ * - Year: 1900-2100
+ * - Month: 1-12
+ * - Day: 1-31 (accounting for month and leap years)
+ * - Hour: 0-23
+ * - Minute: 0-59
+ */
 public class SimpleDate {
 
     private int year;
@@ -25,6 +34,14 @@ public class SimpleDate {
     }
 
     // ========== VALIDATION METHODS ==========
+    
+    /**
+     * Validates a year.
+     * Valid years are between 1900 and 2100 inclusive.
+     * 
+     * @param year the year to validate
+     * @return true if year is valid, false otherwise
+     */
     private boolean isValidYear(int year) {
         return year >= 1900 && year <= 2100;
     }
@@ -33,6 +50,13 @@ public class SimpleDate {
         return month >= 1 && month <= 12;
     }
 
+    /**
+     * Validates a day of the month.
+     * Checks that the day is appropriate for the given month and year (accounting for leap years).
+     * 
+     * @param day the day to validate
+     * @return true if day is valid for the current month/year, false otherwise
+     */
     private boolean isValidDay(int day) {
         if (day < 1 || day > 31) {
             return false;
@@ -48,6 +72,15 @@ public class SimpleDate {
         return day <= daysInMonth[month];
     }
 
+    /**
+     * Determines if a year is a leap year.
+     * A year is a leap year if:
+     * - It is divisible by 4 AND not divisible by 100, OR
+     * - It is divisible by 400
+     * 
+     * @param year the year to check
+     * @return true if the year is a leap year, false otherwise
+     */
     private boolean isLeapYear(int year) {
         return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
     }
