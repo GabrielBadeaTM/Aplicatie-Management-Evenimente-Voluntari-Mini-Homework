@@ -74,8 +74,21 @@ public class Coordinator {
         if (_volunteer.equals(coordinator)) {
             throw new IllegalArgumentException("Coordinator cannot be their own subordinate.");
         }
+        
+        // Validation: volunteer must have already applied to this event
+        if (!event.hasVolunteerApplied(_volunteer)) {
+            throw new IllegalArgumentException("Volunteer must have applied to the event before accepting as subordinate.");
+        }
+        
         addSubordinate(_volunteer);
-        event.enrollVolunteer(_volunteer, _from, _to);
+        
+        // Update the volunteer's availability if they've already applied
+        // Otherwise, the volunteer is already properly enrolled via their prior application
+        EventVolunteerAvailability existing = _volunteer.getEventAvailability(event);
+        if (existing != null) {
+            existing.setAvailableFrom(_from);
+            existing.setAvailableTo(_to);
+        }
     }
 
     // Display

@@ -109,6 +109,17 @@ public class Main {
         SimpleDate vol3_event2_from = new SimpleDate(2026, 3, 6, 10, 0);
         SimpleDate vol3_event2_to = new SimpleDate(2026, 3, 8, 18, 0);
 
+        // First, volunteers must apply for events before coordinators can accept them
+        System.out.println("\nVolunteers apply for events:");
+        vol3.applyToEvent(event1, vol3_event1_from, vol3_event1_to);
+        System.out.println("  - " + vol3.getFirstName() + " applied to Event 1");
+        
+        vol4.applyToEvent(event1, vol4_event1_from, vol4_event1_to);
+        System.out.println("  - " + vol4.getFirstName() + " applied to Event 1");
+        
+        vol3.applyToEvent(event2, vol3_event2_from, vol3_event2_to);
+        System.out.println("  - " + vol3.getFirstName() + " applied to Event 2");
+
         // Coordinators accept subordinates for Event 1
         // Note: Coordinators (vol1, vol2) are NOT enrolled as volunteers - they only coordinate
         role1_1.acceptVolunteer(vol3, vol3_event1_from, vol3_event1_to);

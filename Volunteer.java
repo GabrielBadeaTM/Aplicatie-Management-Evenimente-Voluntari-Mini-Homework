@@ -5,15 +5,13 @@ public class Volunteer extends Person {
     private int yearsOfExperience;
     private TShirtSize tShirtSize;
 
-    private ArrayList<Event> appliedEvents;
-    private ArrayList<EventVolunteerAvailability> eventAvailabilities;
+    private ArrayList<EventVolunteerAvailability> eventAvailabilities; // la ce poate el sa participe. gen unde s a inscris
 
     // Default constructor
     public Volunteer() {
         super();
         this.yearsOfExperience = 0;
         this.tShirtSize = TShirtSize.M;
-        this.appliedEvents = new ArrayList<>();
         this.eventAvailabilities = new ArrayList<>();
     }
 
@@ -26,7 +24,6 @@ public class Volunteer extends Person {
         setYearsOfExperience(_yearsOfExperience);
         setTShirtSize(_tShirtSize);
 
-        this.appliedEvents = new ArrayList<>();
         this.eventAvailabilities = new ArrayList<>();
     }
 
@@ -39,17 +36,57 @@ public class Volunteer extends Person {
         return size != null;
     }
 
+    private int compareDates(SimpleDate date1, SimpleDate date2) {
+        if (date1.getYear() != date2.getYear()) {
+            return date1.getYear() - date2.getYear();
+        }
+        if (date1.getMonth() != date2.getMonth()) {
+            return date1.getMonth() - date2.getMonth();
+        }
+        if (date1.getDay() != date2.getDay()) {
+            return date1.getDay() - date2.getDay();
+        }
+        return date1.getHour() * 60 + date1.getMinute() - (date2.getHour() * 60 + date2.getMinute());
+    }
+
     // =========================
     // APPLY METHODS
     // =========================
 
-    // Apply to event with specific availability dates
-    public void applyToEvent(Event _event, SimpleDate _availableFrom, SimpleDate _availableTo) {
-        if (!appliedEvents.contains(_event)) {
-            appliedEvents.add(_event);
-            EventVolunteerAvailability availability = new EventVolunteerAvailability(_event, this, _availableFrom, _availableTo);
-            eventAvailabilities.add(availability);
+    // Apply to event with specific availability dates (internal method with current time validation)
+    public void applyToEvent(Event _event, SimpleDate _availableFrom, SimpleDate _availableTo, SimpleDate _currentTime) {
+        // Validate that volunteer is not already applied to this event
+        if (getEventAvailability(_event) != null) {
+            throw new IllegalArgumentException("Volunteer has already applied to this event.");
         }
+        
+        // Validate that application is within registration window
+        SimpleDate regStart = _event.getEventDate().getRegistrationStart();
+        SimpleDate regEnd = _event.getEventDate().getRegistrationEnd();
+        
+        if (compareDates(_currentTime, regStart) < 0 || compareDates(_currentTime, regEnd) > 0) {
+            throw new IllegalArgumentException("Cannot apply: registration window is closed. Registration period: " + 
+                regStart + " to " + regEnd);
+        }
+        
+        // Validate that availability dates are within event date bounds
+        SimpleDate eventStart = _event.getEventDate().getStartDate();
+        SimpleDate eventEnd = _event.getEventDate().getEndDate();
+        
+        if (compareDates(_availableFrom, eventStart) < 0 || compareDates(_availableTo, eventEnd) > 0) {
+            throw new IllegalArgumentException("Volunteer availability dates must be within the event date range.");
+        }
+        
+        EventVolunteerAvailability availability = new EventVolunteerAvailability(_event, this, _availableFrom, _availableTo);
+        eventAvailabilities.add(availability);
+        // Register this volunteer in the event's volunteer list
+        _event.registerVolunteer(availability);
+    }
+
+    // Apply to event (overload for backward compatibility - assumes current time is during registration)
+    public void applyToEvent(Event _event, SimpleDate _availableFrom, SimpleDate _availableTo) {
+        SimpleDate regStart = _event.getEventDate().getRegistrationStart();
+        applyToEvent(_event, _availableFrom, _availableTo, regStart);
     }
 
     public void applyToEvents(ArrayList<Event> _events, SimpleDate _availableFrom, SimpleDate _availableTo) {
@@ -63,12 +100,11 @@ public class Volunteer extends Person {
     // =========================
 
     public void cancelApplication(Event _event) {
-        appliedEvents.remove(_event);
         eventAvailabilities.removeIf(av -> av.getEvent().equals(_event));
-    }
+        // Unregister this volunteer from the event's volunteer list
+        _event.unregisterVolunteer(this);}
 
     public void cancelAllApplications() {
-        appliedEvents.clear();
         eventAvailabilities.clear();
     }
 
@@ -100,10 +136,6 @@ public class Volunteer extends Person {
 
     public TShirtSize getTShirtSize() {
         return tShirtSize;
-    }
-
-    public ArrayList<Event> getAppliedEvents() {
-        return appliedEvents;
     }
 
     public ArrayList<EventVolunteerAvailability> getEventAvailabilities() {
@@ -162,6 +194,8 @@ public class Volunteer extends Person {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
+        // Delegates to Person.equals() which compares firstName, lastName, email, phone
+        // This provides a reasonable unique identifier for volunteers
         return super.equals(obj);
     }
 
@@ -176,7 +210,7 @@ public class Volunteer extends Person {
                 "name=" + firstName + " " + lastName +
                 ", experience=" + yearsOfExperience +
                 ", size=" + tShirtSize +
-                ", appliedEvents=" + appliedEvents.size() +
+                ", appliedEvents=" + eventAvailabilities.size() +
                 '}';
     }
 }

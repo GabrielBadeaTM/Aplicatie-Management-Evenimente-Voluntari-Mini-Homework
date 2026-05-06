@@ -5,7 +5,7 @@
 public class EventVolunteerAvailability {
 
     private Event event;
-    private Volunteer volunteer;
+    private Volunteer volunteer; // asta dispare pentru ca e deja inclus in voluntar
     private SimpleDate availableFrom;
     private SimpleDate availableTo;
 

@@ -25,6 +25,15 @@ public class Admin extends Person {
 
     // CREATE EVENT
     public Event createEvent(String name, EventDate eventDate) {
+        // Check if event with same name and dates already exists
+        for (Event existingEvent : createdEvents) {
+            if (existingEvent.getName().equals(name) && 
+                existingEvent.getEventDate().equals(eventDate)) {
+                throw new IllegalArgumentException("Event with name '" + name + 
+                    "' and dates " + eventDate + " already exists.");
+            }
+        }
+        
         Event event = new Event(name, eventDate, this);
         createdEvents.add(event);
         return event;
