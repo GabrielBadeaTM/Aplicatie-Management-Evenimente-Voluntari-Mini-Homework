@@ -32,7 +32,7 @@
 
     <build>
         <sourceDirectory>${project.basedir}</sourceDirectory>
-        <testSourceDirectory>${project.basedir}/tests</testSourceDirectory>
+        <testSourceDirectory>${project.basedir}/functionTests</testSourceDirectory>
         <plugins>
             <!-- Maven Compiler Plugin -->
             <plugin>
