@@ -1,3 +1,6 @@
+package models;
+
+
 /**
  * Represents a Volunteer's availability for a specific Event.
  * 
