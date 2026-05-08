@@ -31,8 +31,8 @@
     </dependencies>
 
     <build>
-        <sourceDirectory>${project.basedir}/src/main/java/models</sourceDirectory>
-        <testSourceDirectory>${project.basedir}/src/test/java/functionTests</testSourceDirectory>
+        <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
+        <testSourceDirectory>${project.basedir}/src/test/java</testSourceDirectory>
         <plugins>
             <!-- Maven Compiler Plugin -->
             <plugin>
